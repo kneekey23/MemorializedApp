@@ -79,10 +79,10 @@ class App extends Component {
         </Navbar.Header>
         <Nav>
           <NavItem eventKey={1} href="#">
-            Link
+            See Recent Obituaries
           </NavItem>
           <NavItem eventKey={2} href="#">
-            Link
+            Purchase a Forever Obituary
           </NavItem>
         </Nav>
       </Navbar>;
