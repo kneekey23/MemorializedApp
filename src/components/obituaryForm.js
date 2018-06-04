@@ -2,24 +2,28 @@ import React, { Component } from 'react'
 import { Form, FormControl, FormGroup, ControlLabel, HelpBlock, Button} from 'react-bootstrap';
 import { setWeb3Instance, getObituaries, obituaryContract } from '../services/blockChainService'
 import NavBarComp from './navigation'
+import ipfsAPI from 'ipfs-api';
 
 class ObituaryForm extends Component {
     constructor(props, context) {
         super(props, context);
 
+    this.ipfsApi = ipfsAPI('localhost', '5001')
     this.handleClick = this.handleClick.bind(this);
     this.handleNameChange = this.handleNameChange.bind(this);
     this.handleSurvivedByChange = this.handleSurvivedByChange.bind(this);
     this.handleObituaryChange = this.handleObituaryChange.bind(this);
     this.handlePictureChange = this.handlePictureChange.bind(this);
+    this.saveToIpfs = this.saveToIpfs.bind(this);
 
     this.state = {
       deceasedName: '',
       survivedBy: '',
       obituary: '',
       pictureHash: 'test',
-      ipfsInfo: 'test',
-      file: ''
+      ipfsInfo: 'https://ipfs.io/ipfs/',
+      file: '',
+      showPicturePreview: false
     };
       }
 
@@ -48,7 +52,26 @@ class ObituaryForm extends Component {
       }
 
       handlePictureChange(e) {
-        this.setState({file: e.target.value});
+        e.stopPropagation();
+        e.preventDefault();
+        const file = e.target.files[0];
+        let reader = new window.FileReader();
+        reader.onloadend = () => this.saveToIpfs(reader)
+        reader.readAsArrayBuffer(file)
+      }
+
+      saveToIpfs (reader) {
+        let ipfsId
+        const buffer = Buffer.from(reader.result)
+        this.ipfsApi.add(buffer, { progress: (prog) => console.log(`received: ${prog}`) })
+          .then((response) => {
+            console.log(response)
+            ipfsId = response[0].hash
+            console.log(ipfsId)
+            this.setState({pictureHash: ipfsId, showPicturePreview: true})
+          }).catch((err) => {
+            console.error(err)
+          })
       }
     
       handleClick(e) {
@@ -116,6 +139,7 @@ class ObituaryForm extends Component {
           />
           <FormControl.Feedback />
         </FormGroup>
+        <img src={this.ipfsInfo + this.pictureHash} className={!this.state.showPicturePreview ? 'hidden' : 'previewImage'}  />
         <Button bsStyle="primary" onClick={this.handleClick}>Purchase Obituary</Button>
       </form>
 
