@@ -1,4 +1,4 @@
-/* PAGE */
+/* PAGE
 
 body,
 .pure-g [class*=pure-u] {
@@ -36,7 +36,7 @@ code {
 
 /* NAVBAR */
 
-.navbar {
+/* .navbar {
   position: fixed;
   padding: 5px;
   background: #0c1a2b;
@@ -65,4 +65,4 @@ code {
 .navbar .uport-logo {
   height: 16px;
   margin-right: 10px;
-}
+} */ 
